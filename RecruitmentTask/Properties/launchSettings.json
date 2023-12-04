@@ -9,12 +9,12 @@
     }
   },
   "profiles": {
-    "http": {
+    "swagger": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "weatherforecast",
-      "applicationUrl": "http://localhost:5202",
+      "applicationUrl": "http://localhost:5202/swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

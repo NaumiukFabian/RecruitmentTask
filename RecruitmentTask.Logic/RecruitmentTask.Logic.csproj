@@ -1,19 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\RecruitmentTask.Database.Persistence\RecruitmentTask.Database.Persistence.csproj" />
     <ProjectReference Include="..\RecruitmentTask.Logic.Interfaces\RecruitmentTask.Logic.Interfaces.csproj" />
-    <ProjectReference Include="..\RecruitmentTask.Logic\RecruitmentTask.Logic.csproj" />
   </ItemGroup>
 
 </Project>

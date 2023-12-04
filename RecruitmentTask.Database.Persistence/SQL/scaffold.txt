@@ -1,0 +1,1 @@
+dotnet ef dbcontext scaffold "Host=localhost;Database=recruitmentTaskBase;Username=postgres;Password=beatka" Npgsql.EntityFrameworkCore.PostgreSQL -o Models --project RecruitmentTask.Database.Persistence -f
