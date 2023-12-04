@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\RecruitmentTask.Database.Persistence\RecruitmentTask.Database.Persistence.csproj" />
     <ProjectReference Include="..\RecruitmentTask.Logic.Interfaces\RecruitmentTask.Logic.Interfaces.csproj" />
   </ItemGroup>

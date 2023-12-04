@@ -7,9 +7,7 @@ public partial class Price
 {
     public string Id { get; set; } = null!;
 
-    public string Sku { get; set; } = null!;
+    public string? Sku { get; set; }
 
-    public decimal? Nettproductpirce { get; set; }
-
-    public virtual Product SkuNavigation { get; set; } = null!;
+    public decimal? Nettproductpice { get; set; }
 }

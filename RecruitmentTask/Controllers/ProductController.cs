@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RecruitmentTask.Logic.Dtos;
+using RecruitmentTask.Logic.Interfaces.Dtos;
 using RecruitmentTask.Logic.Interfaces.Interfaces;
 
 namespace RecruitmentTask.Controllers
@@ -16,6 +18,12 @@ namespace RecruitmentTask.Controllers
         {
             await _productLogic.DownloadAndSave();
             return Ok();
-        } 
+        }
+
+        [HttpGet("get-product-by-sku")]
+        public VProductionInfoDto GetProductBySku(string sku)
+        {
+            return _productLogic.GetVproductinfo(sku);
+        }
     }
 }

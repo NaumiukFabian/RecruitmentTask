@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RecruitmentTask.Logic.Interfaces.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,5 +10,6 @@ namespace RecruitmentTask.Logic.Interfaces.Interfaces
     public interface IProductLogic
     {
         Task DownloadAndSave();
+        VProductionInfoDto GetVproductinfo(string sku);
     }
 }

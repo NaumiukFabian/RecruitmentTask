@@ -21,6 +21,8 @@ public partial class RecruitmentTaskBaseContext : DbContext
 
     public virtual DbSet<Product> Products { get; set; }
 
+    public virtual DbSet<Vproductinfo> Vproductinfos { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseNpgsql("Host=localhost;Database=recruitmentTaskBase;Username=postgres;Password=beatka");
@@ -38,6 +40,7 @@ public partial class RecruitmentTaskBaseContext : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
             entity.Property(e => e.Shippincost).HasColumnName("shippincost");
+            entity.Property(e => e.Shipping).HasColumnName("shipping");
             entity.Property(e => e.Sku).HasColumnName("sku");
             entity.Property(e => e.Unit).HasColumnName("unit");
         });
@@ -48,15 +51,11 @@ public partial class RecruitmentTaskBaseContext : DbContext
 
             entity.ToTable("prices");
 
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Nettproductpirce).HasColumnName("nettproductpirce");
-            entity.Property(e => e.Sku).HasColumnName("sku");
+            entity.HasIndex(e => e.Sku, "prices_sku_key").IsUnique();
 
-            entity.HasOne(d => d.SkuNavigation).WithMany(p => p.Prices)
-                .HasPrincipalKey(p => p.Sku)
-                .HasForeignKey(d => d.Sku)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("prices_sku_fkey");
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Nettproductpice).HasColumnName("nettproductpice");
+            entity.Property(e => e.Sku).HasColumnName("sku");
         });
 
         modelBuilder.Entity<Product>(entity =>
@@ -71,15 +70,27 @@ public partial class RecruitmentTaskBaseContext : DbContext
             entity.Property(e => e.Category).HasColumnName("category");
             entity.Property(e => e.Defaultimage).HasColumnName("defaultimage");
             entity.Property(e => e.Ean).HasColumnName("ean");
-            entity.Property(e => e.Producername).HasColumnName("producername");
+            entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.Productername).HasColumnName("productername");
             entity.Property(e => e.Shipping).HasColumnName("shipping");
             entity.Property(e => e.Sku).HasColumnName("sku");
+        });
 
-            entity.HasOne(d => d.SkuNavigation).WithOne(p => p.Product)
-                .HasPrincipalKey<Inventory>(p => p.Sku)
-                .HasForeignKey<Product>(d => d.Sku)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("products_sku_fkey");
+        modelBuilder.Entity<Vproductinfo>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vproductinfo");
+
+            entity.Property(e => e.Defaultimage).HasColumnName("defaultimage");
+            entity.Property(e => e.Ean).HasColumnName("ean");
+            entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.Nettproductpice).HasColumnName("nettproductpice");
+            entity.Property(e => e.Productername).HasColumnName("productername");
+            entity.Property(e => e.Quantity).HasColumnName("quantity");
+            entity.Property(e => e.Shipping).HasColumnName("shipping");
+            entity.Property(e => e.Sku).HasColumnName("sku");
+            entity.Property(e => e.Unit).HasColumnName("unit");
         });
 
         OnModelCreatingPartial(modelBuilder);

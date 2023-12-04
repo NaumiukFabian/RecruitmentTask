@@ -7,7 +7,7 @@ public partial class Inventory
 {
     public int Id { get; set; }
 
-    public string Sku { get; set; } = null!;
+    public string? Sku { get; set; }
 
     public decimal? Quantity { get; set; }
 
@@ -15,5 +15,5 @@ public partial class Inventory
 
     public decimal? Shippincost { get; set; }
 
-    public virtual Product? Product { get; set; }
+    public string? Shipping { get; set; }
 }
