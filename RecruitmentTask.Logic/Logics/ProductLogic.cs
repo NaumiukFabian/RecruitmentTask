@@ -4,15 +4,9 @@ using RecruitmentTask.Database.Persistence.Models;
 using RecruitmentTask.Logic.Dtos;
 using RecruitmentTask.Logic.Interfaces.Dtos;
 using RecruitmentTask.Logic.Interfaces.Interfaces;
+using RecruitmentTask.Logic.Interfaces.ServiceResponses;
 using RecruitmentTask.Logic.Map;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace RecruitmentTask.Logic.Logics
 {
@@ -30,47 +24,66 @@ namespace RecruitmentTask.Logic.Logics
             _context = context;
         }
 
-        public VProductionInfoDto GetVproductinfo(string sku)
+        public ServiceResponse<VProductionInfoDto> GetVproductinfo(string sku)
         {
-            Vproductinfo vproductinfo = _context.Vproductinfos.FirstOrDefault(x => x.Sku == sku);
-            VProductionInfoDto vProductInfoDto = new VProductionInfoDto()
+            Vproductinfo? vproductinfo = _context.Vproductinfos.FirstOrDefault(x => x.Sku == sku);
+
+            if (vproductinfo == null)
             {
-                Name = vproductinfo.Name,
-                Ean = vproductinfo.Ean,
-                Productername = vproductinfo.Productername,
-                Defaultimage = vproductinfo.Defaultimage,
-                Quantity = vproductinfo.Quantity,
-                Unit = vproductinfo.Unit,
-                Shipping = vproductinfo.Shipping,
-                Nettproductpice = vproductinfo.Nettproductpice,
-            };
-
-            return vProductInfoDto;
-        }
-
-        public async Task DownloadAndSave()
-        {
-            CreateNames();
-            if (FileNames == null)
-                return;
-
-            foreach (var file in FileNames)
-            {
-                byte[] data = await DownloadCsv(file.Url);
-                await SaveCsv(file.Name, data);
+                return new ServiceResponse<VProductionInfoDto> { Success = false, Message = "Nie znaleziono podanego SKU" };
             }
 
-            ReadFiles();
+            VProductionInfoDto vProductInfoDto = new VProductionInfoDto()
+            {
+                NazwaProduktu = vproductinfo.NazwaProduktu,
+                Ean = vproductinfo.Ean,
+                NazwaProducenta = vproductinfo.NazwaProducenta,
+                Kategoria = vproductinfo.Kategoria,
+                Url = vproductinfo.Url,
+                StanMagazynowy = vproductinfo.StanMagazynowy,
+                JednostkaLogistyczna = vproductinfo.JednostkaLogistyczna,
+                CenaNetto = vproductinfo.CenaNetto,
+                KosztDostawy = vproductinfo.KosztDostawy,
+            };
+
+            return new ServiceResponse<VProductionInfoDto> { Data = vProductInfoDto, Success = true, Message = "Sukces" };
         }
 
-        private void ReadFiles()
+        public async Task<ServiceResponse<bool>> DownloadAndSave()
+        {
+            try
+            {
+                CreateNames();
+                if (FileNames == null)
+                    return new ServiceResponse<bool> { Success = false, Message = "Zmieniono nazwę plików lub nie udało się wszystko pobrać" };
+
+                foreach (var file in FileNames)
+                {
+                    byte[] data = await DownloadCsv(file.Url);
+                    await SaveCsv(file.Name, data);
+                }
+
+                return ReadFiles();
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResponse<bool> { Success = false, Message = ex.Message };
+            }
+
+        }
+
+        private ServiceResponse<bool> ReadFiles()
         {
             if (FileNames == null)
-                return;
+                return new ServiceResponse<bool> { Data = false, Success = false, Message = "Brak plików" };
 
             foreach (var file in FileNames)
             {
+                if (BaseFilePath == null)
+                    return new ServiceResponse<bool> { Data = false, Success = false, Message = "Brak wskazania lokalizacji plików" };
+
                 string path = Path.Combine(BaseFilePath, file.Name + ".csv");
+
                 using (var reader = new StreamReader(path))
                 {
                     var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -86,7 +99,8 @@ namespace RecruitmentTask.Logic.Logics
                     if (file.Name == "Inventory" || file.Name == "Prices")
                     {
                         csvConfig.Delimiter = ",";
-                    }    
+                    }
+
 
                     using (var csv = new CsvReader(reader, csvConfig))
                     {
@@ -96,27 +110,43 @@ namespace RecruitmentTask.Logic.Logics
 
                         if (file.Name == "Products")
                         {
-                            var records = csv.GetRecords<Product>().ToList();
-                            var recordsToBase = records.Where(r => r.Shipping == "24h" && (r.Category != null && !r.Category.Contains("Kable"))).ToList();
-                            _context.Products.AddRange(recordsToBase);
-                            _context.SaveChanges();
+                            ProcessCsv<Product>(csv, r => r.Shipping == "24h" && (r.Category != null && !r.Category.Contains("Kable")));
                         }
                         else if (file.Name == "Inventory")
                         {
-                            var records = csv.GetRecords<Inventory>().ToList();
-                            var recordsToBase = records.Where(r => r.Shipping == "24h").ToList();
-                            _context.Inventories.AddRange(recordsToBase);
-                            _context.SaveChanges();
+                            ProcessCsv<Inventory>(csv, r => r.Shipping == "24h");
                         }
-                        else if(file.Name == "Prices")
+                        else if (file.Name == "Prices")
                         {
-                            var records = csv.GetRecords<Price>().ToList();
-                            _context.Prices.AddRange(records);
-                            _context.SaveChanges();
+                            ProcessCsv<Price>(csv, null);
                         }
+                       
                     }
+
                 }
             }
+
+            return new ServiceResponse<bool> {Data = false, Success = true, Message = "Sukces" };
+        }
+
+        private void ProcessCsv<T>(CsvReader csv, Func<T, bool>? filter) where T : class
+        {
+            var records = csv.GetRecords<T>().ToList();
+            if (filter != null)
+            {
+                var recordsToBase = records.Where(filter).ToList();
+                SaveToDatabase(recordsToBase);
+            }
+            else
+            {
+                SaveToDatabase(records);
+            }
+        }
+
+        private void SaveToDatabase<T>(List<T> recordsToBase) where T : class
+        {
+            _context.Set<T>().AddRange(recordsToBase);
+            _context.SaveChanges();
         }
 
         private void CreateNames()

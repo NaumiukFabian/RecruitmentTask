@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿
 namespace RecruitmentTask.Database.Persistence.Models;
 
 public partial class Inventory

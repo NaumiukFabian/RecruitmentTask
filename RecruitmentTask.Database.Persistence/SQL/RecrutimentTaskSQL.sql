@@ -34,8 +34,17 @@ create table Prices
 );
 
 create or replace view VProductInfo as
-select Products.SKU, Products.Name, Products.EAN, Products.Productername,
-Products.DefaultImage, Inv.Quantity, Inv.Unit,
-Inv.Shipping, Pric.Nettproductpice from Products
+select 
+Products.SKU, 
+Products.Name as "Nazwa produktu", 
+Products.EAN as "EAN", 
+Products.Category as "Kategoria", 
+Products.Productername as "Nazwa producenta",
+Products.DefaultImage "URL", 
+Inv.Quantity as "Stan magazynowy", 
+Inv.Unit as "Jednostka logistyczna",
+Pric.Nettproductpice as "Cena netto", 
+Inv.shippincost as "Koszt dostawy"
+from Products
 left join Inventory Inv on Inv.SKU = Products.SKU
 left join Prices Pric on Pric.SKU = Products.SKU;

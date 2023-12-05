@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using RecruitmentTask.Database.Persistence.Models;
 using RecruitmentTask.Logic.Interfaces.Interfaces;
 using RecruitmentTask.Logic.Logics;

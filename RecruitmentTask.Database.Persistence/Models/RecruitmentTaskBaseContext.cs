@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using Microsoft.EntityFrameworkCore;
 
 namespace RecruitmentTask.Database.Persistence.Models;
@@ -82,15 +81,15 @@ public partial class RecruitmentTaskBaseContext : DbContext
                 .HasNoKey()
                 .ToView("vproductinfo");
 
-            entity.Property(e => e.Defaultimage).HasColumnName("defaultimage");
-            entity.Property(e => e.Ean).HasColumnName("ean");
-            entity.Property(e => e.Name).HasColumnName("name");
-            entity.Property(e => e.Nettproductpice).HasColumnName("nettproductpice");
-            entity.Property(e => e.Productername).HasColumnName("productername");
-            entity.Property(e => e.Quantity).HasColumnName("quantity");
-            entity.Property(e => e.Shipping).HasColumnName("shipping");
+            entity.Property(e => e.CenaNetto).HasColumnName("Cena netto");
+            entity.Property(e => e.Ean).HasColumnName("EAN");
+            entity.Property(e => e.JednostkaLogistyczna).HasColumnName("Jednostka logistyczna");
+            entity.Property(e => e.KosztDostawy).HasColumnName("Koszt dostawy");
+            entity.Property(e => e.NazwaProducenta).HasColumnName("Nazwa producenta");
+            entity.Property(e => e.NazwaProduktu).HasColumnName("Nazwa produktu");
             entity.Property(e => e.Sku).HasColumnName("sku");
-            entity.Property(e => e.Unit).HasColumnName("unit");
+            entity.Property(e => e.StanMagazynowy).HasColumnName("Stan magazynowy");
+            entity.Property(e => e.Url).HasColumnName("URL");
         });
 
         OnModelCreatingPartial(modelBuilder);

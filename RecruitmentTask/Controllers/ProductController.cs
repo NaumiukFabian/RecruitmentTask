@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RecruitmentTask.Logic.Dtos;
 using RecruitmentTask.Logic.Interfaces.Dtos;
 using RecruitmentTask.Logic.Interfaces.Interfaces;
+using RecruitmentTask.Logic.Interfaces.ServiceResponses;
 
 namespace RecruitmentTask.Controllers
 {
@@ -14,14 +14,14 @@ namespace RecruitmentTask.Controllers
         }
 
         [HttpGet("get-csv-and-insert")]
-        public async Task<IActionResult> GetCsvAndInsert()
+        public async Task<ServiceResponse<bool>> GetCsvAndInsert()
         {
-            await _productLogic.DownloadAndSave();
-            return Ok();
+            var response = await _productLogic.DownloadAndSave();
+            return response;
         }
 
         [HttpGet("get-product-by-sku")]
-        public VProductionInfoDto GetProductBySku(string sku)
+        public ServiceResponse<VProductionInfoDto> GetProductBySku(string sku)
         {
             return _productLogic.GetVproductinfo(sku);
         }

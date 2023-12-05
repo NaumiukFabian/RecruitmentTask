@@ -1,15 +1,11 @@
 ﻿using RecruitmentTask.Logic.Interfaces.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using RecruitmentTask.Logic.Interfaces.ServiceResponses;
 
 namespace RecruitmentTask.Logic.Interfaces.Interfaces
 {
     public interface IProductLogic
     {
-        Task DownloadAndSave();
-        VProductionInfoDto GetVproductinfo(string sku);
+        Task<ServiceResponse<bool>> DownloadAndSave();
+        ServiceResponse<VProductionInfoDto> GetVproductinfo(string sku);
     }
 }
