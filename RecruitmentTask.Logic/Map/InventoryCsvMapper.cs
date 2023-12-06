@@ -7,7 +7,7 @@ namespace RecruitmentTask.Logic.Map
     {
         public InventoryCsvMapper()
         {
-            Map(m => m.Id).Name("product_id");
+            Map(m => m.Productid).Name("product_id");
             Map(m => m.Sku).Name("sku");
             Map(m => m.Quantity).Name("qty");
             Map(m => m.Unit).Name("unit");

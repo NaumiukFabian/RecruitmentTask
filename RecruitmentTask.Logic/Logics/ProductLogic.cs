@@ -101,7 +101,6 @@ namespace RecruitmentTask.Logic.Logics
                         csvConfig.Delimiter = ",";
                     }
 
-
                     using (var csv = new CsvReader(reader, csvConfig))
                     {
                         var mapperFactory = new MapperFactory();
@@ -110,7 +109,7 @@ namespace RecruitmentTask.Logic.Logics
 
                         if (file.Name == "Products")
                         {
-                            ProcessCsv<Product>(csv, r => r.Shipping == "24h" && (r.Category != null && !r.Category.Contains("Kable")));
+                            ProcessCsv<ProductCsvDto>(csv, r => r.Shipping == "24h" && (r.Category != null && !r.Category.Contains("Kable")));
                         }
                         else if (file.Name == "Inventory")
                         {
@@ -131,16 +130,44 @@ namespace RecruitmentTask.Logic.Logics
 
         private void ProcessCsv<T>(CsvReader csv, Func<T, bool>? filter) where T : class
         {
+            Type type = typeof(T);
+
             var records = csv.GetRecords<T>().ToList();
             if (filter != null)
             {
                 var recordsToBase = records.Where(filter).ToList();
+
+                if(type.FullName == "RecruitmentTask.Logic.Dtos.ProductCsvDto")
+                {
+                    MappingAndInserProducts(recordsToBase);
+                    return;
+                }
+
                 SaveToDatabase(recordsToBase);
+
+                return;
             }
             else
             {
+                if (type.FullName == "RecruitmentTask.Logic.Dtos.ProductCsvDto")
+                {
+                    MappingAndInserProducts(records);
+                    return;
+                }
+
                 SaveToDatabase(records);
+
+                return;
             }
+        }
+
+        private void MappingAndInserProducts<T>(List<T> recordsToBase) where T : class
+        {
+            ProductCsvDtoToProduct productCsvDtoToProduct = new ProductCsvDtoToProduct();
+            List<Product> recordsToBaseMapped = productCsvDtoToProduct.Map(recordsToBase as List<ProductCsvDto>);
+            SaveToDatabase(recordsToBaseMapped);
+
+            return;
         }
 
         private void SaveToDatabase<T>(List<T> recordsToBase) where T : class

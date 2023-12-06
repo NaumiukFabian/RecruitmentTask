@@ -1,9 +1,11 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+
 namespace RecruitmentTask.Database.Persistence.Models;
 
 public partial class Inventory
 {
-    public int Id { get; set; }
+    public int Productid { get; set; }
 
     public string? Sku { get; set; }
 

@@ -1,5 +1,7 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace RecruitmentTask.Database.Persistence.Models;
 
@@ -23,20 +25,19 @@ public partial class RecruitmentTaskBaseContext : DbContext
     public virtual DbSet<Vproductinfo> Vproductinfos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=localhost;Database=recruitmentTaskBase;Username=postgres;Password=beatka");
+        => optionsBuilder.UseNpgsql();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Inventory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("inventory_pkey");
+            entity.HasKey(e => e.Productid).HasName("inventory_pkey");
 
             entity.ToTable("inventory");
 
             entity.HasIndex(e => e.Sku, "inventory_sku_key").IsUnique();
 
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Productid).HasColumnName("productid");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
             entity.Property(e => e.Shippincost).HasColumnName("shippincost");
             entity.Property(e => e.Shipping).HasColumnName("shipping");
@@ -66,12 +67,14 @@ public partial class RecruitmentTaskBaseContext : DbContext
             entity.HasIndex(e => e.Sku, "products_sku_key").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Available).HasColumnName("available");
             entity.Property(e => e.Category).HasColumnName("category");
             entity.Property(e => e.Defaultimage).HasColumnName("defaultimage");
             entity.Property(e => e.Ean).HasColumnName("ean");
+            entity.Property(e => e.Isvendor).HasColumnName("isvendor");
+            entity.Property(e => e.Iswire).HasColumnName("iswire");
             entity.Property(e => e.Name).HasColumnName("name");
             entity.Property(e => e.Productername).HasColumnName("productername");
-            entity.Property(e => e.Shipping).HasColumnName("shipping");
             entity.Property(e => e.Sku).HasColumnName("sku");
         });
 

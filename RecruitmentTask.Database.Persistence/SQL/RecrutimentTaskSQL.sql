@@ -12,13 +12,15 @@ create table Products
 	EAN text,
 	Productername text,
 	Category text,
-	Shipping text,
+	IsWire numeric,
+	Available numeric,
+	IsVendor numeric,
 	DefaultImage text
 );
 
 create table Inventory
 (
-	Id serial primary key,
+	ProductId serial primary key,
 	SKU text unique,
 	Quantity numeric,
 	Unit text,

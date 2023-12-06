@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
 
 namespace RecruitmentTask.Database.Persistence.Models;
 
@@ -16,7 +17,11 @@ public partial class Product
 
     public string? Category { get; set; }
 
-    public string? Shipping { get; set; }
+    public decimal? Iswire { get; set; }
+
+    public decimal? Available { get; set; }
+
+    public decimal? Isvendor { get; set; }
 
     public string? Defaultimage { get; set; }
 }
